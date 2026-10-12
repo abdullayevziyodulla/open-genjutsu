@@ -6,7 +6,7 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 FILES={'LICENSE','NOTICE','README.md','START-HERE.md','THIRD-PARTY.md','CONTRIBUTING.md',
-       'SECURITY.md','AGENTS.md','.gitignore','.env.example','requirements.txt',
+       'SECURITY.md','AGENTS.md','.gitignore','.gitattributes','.env.example','requirements.txt',
        'setup.sh','setup-face-mesh.sh','start.command','Start-Open-Genjutsu.cmd','Stop-Open-Genjutsu.cmd',
        'Stop-Genjustsu.ps1'}
 PYTHON={'app.py','audio_workflow.py','browser_preview.py','config.py','doctor.py','face_mesh.py',
@@ -32,7 +32,16 @@ def package(output,root=ROOT):
     entries=source_files(root)
     with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED) as archive:
         for path in entries:
-            archive.write(path,'Open-Genjutsu/'+path.relative_to(root).as_posix())
+            info=zipfile.ZipInfo.from_file(path,'Open-Genjutsu/'+path.relative_to(root).as_posix())
+            data=path.read_bytes()
+            if path.suffix not in {'.jpg'}:
+                data=data.replace(b'\r\n',b'\n')
+                if path.suffix=='.cmd':
+                    data=data.replace(b'\n',b'\r\n')
+            if path.suffix in {'.sh','.command'}:
+                info.create_system=3
+                info.external_attr=0o100755 << 16
+            archive.writestr(info,data,compress_type=zipfile.ZIP_DEFLATED)
     digest=hashlib.sha256(output.read_bytes()).hexdigest()
     output.with_suffix('.zip.sha256').write_text(digest+'  '+output.name+'\n')
     return len(entries)
