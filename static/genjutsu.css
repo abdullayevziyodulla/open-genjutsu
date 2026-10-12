@@ -18,3 +18,10 @@ dialog{background:#232526;border:1px solid #424647;box-shadow:0 24px 100px #0009
 @media(max-height:800px) and (min-width:651px){.editor-title{padding:5px 6px 11px}.editor-logo{height:33px;width:40px}.editor-title h2{font-size:14px}.editor-title p{font-size:9px}.editor-mode{padding:8px 11px}.source-upload{min-height:141px;gap:12px}.source-upload strong,.character-empty strong{font-size:15px}.character-empty,.characters-card{min-height:130px}.character-empty{gap:10px}.orb{width:38px;height:38px}.prompt-switch{padding:9px 12px}.setting-row{padding:8px 12px}.composer #next-step{font-size:8px}.composer #draft-button{padding:11px}}
 .composer #form:not(.source-ready)>details,.composer #form:not(.source-ready)>.actions{display:none}.characters-card{margin-top:10px}
 @media(max-height:800px) and (min-width:651px){.editor-mode{display:none}.editor-title{padding-bottom:12px}.source-upload{min-height:132px}.character-empty,.characters-card{min-height:125px}}
+/* Draw close icons around their geometric center instead of a font baseline. */
+.dialog-close,#close-settings{position:relative;flex-shrink:0}
+dialog .heading .dialog-close,dialog .heading #close-settings{width:31px;height:31px;padding:0;border-radius:50%}
+.dialog-close,.tile-remove,#close-settings{font-size:0!important;line-height:1;padding:0}
+.dialog-close::before,.dialog-close::after,.tile-remove::before,.tile-remove::after,#close-settings::before,#close-settings::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;background:currentColor;border-radius:1px;pointer-events:none;transform:translate(-50%,-50%) rotate(45deg)}
+.dialog-close::after,.tile-remove::after,#close-settings::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.tile-remove::before,.tile-remove::after{width:9px;height:1.5px}
