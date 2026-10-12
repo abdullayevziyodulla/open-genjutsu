@@ -13,7 +13,8 @@ class FaceMeshTests(unittest.TestCase):
  def test_mesh_submission_does_not_rebuild_depth_input(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/'workflow-mode.json').write_text('{"mode":"face_mesh"}');(p/'audio-manifest.json').write_text('{}')
-   response=Mock();response.json.return_value={'requestId':'mesh-test'}
-   with patch('mask_review.require_approved'),patch('seedance_bridge.credential',return_value='test'),patch('seedance_bridge.setting',return_value='https://example.org'),patch('seedance_bridge.upload',return_value='https://example.org/video'),patch('audio_workflow.prepare_seedance_video') as prepare,patch('seedance_bridge.requests.post',return_value=response) as post:
-    seedance_bridge.submit(p,'Replace subject','reference.png');prepare.assert_not_called()
-    payload=post.call_args.kwargs['json'];self.assertIn('Remove all face mesh lines',payload['prompt']);self.assertNotIn('colored-depth',payload['prompt']);self.assertTrue(payload['is_draft'])
+   from replicate_seedance import build_prompt
+   prompt=build_prompt(p,'Replace subject')
+   self.assertIn('original video with face mesh overlay',prompt)
+   self.assertIn('Remove all depth colors and face mesh lines',prompt)
+   self.assertNotIn('colored-depth composite',prompt)

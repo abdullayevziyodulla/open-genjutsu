@@ -8,3 +8,4 @@ Pillow==12.1.1
 requests==2.32.5
 opencv-python-headless==5.0.0.93
 scipy==1.18.1
+xxhash==3.6.0

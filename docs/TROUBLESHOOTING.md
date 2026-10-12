@@ -1,15 +1,12 @@
 # Troubleshooting
 
-- Webhook URL required: install cloudflared and use start.command, or set your own public HTTPS callback. Never tunnel the UI/runs directory. The callback-only receiver is separate.
+- **Cannot prepare:** add your Replicate token, check balance and run doctor.py. Rubber Band must be installed.
+- **Bad mask or tracking:** inspect the full clip, repair it and approve the new artifacts. Do not pay to generate from a known-bad input.
+- **Cannot upload to Oxen:** configure a private namespace/repository and check key access. Preparation is kept locally. Confirm no request was submitted before using an explicit recovery action.
+- **Failed or uncertain generation:** inspect the saved task ID in the studio/provider console. Never repeatedly click Generate or clear intent markers. Provider failures do not prove a refund; check the account.
+- **Video-edit duration rejected:** use Edit with automatic duration. A fixed duration is not a workaround for an automatically inferred edit.
+- **Not enough credits:** a provider may reserve a maximum cost rather than the source-length estimate. Do not assume the displayed estimate guarantees acceptance or circumvent it with incompatible model settings.
+- **Preview does not play:** use the saved download. Prepared previews have a browser-compatible preview route; the source files are preserved.
+- **Port occupied:** the Windows launcher finds a free port from 8770–8799. On macOS/Linux set PORT before launch.
 
-- Missing Rubber Band: install its CLI, restart the shell and run `doctor.py`.
-- Missing credentials: populate this folder's `.env`; restart. Credentials are never obtained from a parent project.
-- 401/403 or missing model: verify your account/key/access and provider model schema. Never paste secrets into logs.
-- Invalid image / media download failure: use real PNG/JPEG/WebP files and reachable direct URLs. Tmpfiles URLs expire. The uploader rejects HTML/empty responses.
-- Mask holes, edge noise, chair spill: reject it, run RGB repair and review the full clip again. Cleanup is heuristic; never assume it proves correctness.
-- Frame count/index mismatch: composition fails deliberately. Inspect output fps/frame IDs; align the provider output to the same source rather than forcing a shifted mask through.
-- Original audio duration mismatch: the exporter permits a short final-frame hold for a 0.25–0.5 second provider rounding gap and records `duration-adjustment.json`. Larger differences are rejected. It never stretches or loops source audio. If the source codec cannot be remuxed into MP4, stop and choose an explicit compatible export plan.
-- No source audio: currently unsupported; provide a source with an audio track or adapt the workflow explicitly.
-- Restart: Seedance and HD result retrieval resume from saved responses. Earlier preparation failures require inspecting saved Replicate predictions. The local UI is not a durable distributed worker queue.
-- UI fonts: Google Fonts is used, with system fallbacks if offline. Companion artwork is bundled under `static/companions`.
-- Lost pending status: use `workflow.py resume JOB` (or `--hd`), not another submit. Completed outputs remain in `runs`.
+Existing jobs remain accessible from the local library. Restart resumes accepted generation collection, not paid submission. This source package does not include anyone else's jobs or account.

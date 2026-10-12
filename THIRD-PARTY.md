@@ -1,7 +1,9 @@
-# Third-party notices
+# Third-party components
 
-Python dependencies retain their respective licenses. Rubber Band is an external executable with its own licensing; obtain it from its official distribution/package manager. Hosted Demucs, depth, SAM and Seedance models are not redistributed in this package and remain subject to their providers' terms.
+Open Genjutsu's source and documentation are MIT licensed. Each Python dependency retains its own license; consult its distribution metadata and upstream source. The optional MediaPipe worker downloads its model from Google on first use. Model weights are not included in this release.
 
-TEIN branding and companion illustrations are included from the existing user-authorized UI. Those assets are excluded from the MIT license covering this project’s code and documentation; this package grants no new rights to them. Google Fonts are requested by CSS, not vendored here. Two user-selected videos are included under `examples/`; see its README for media rights and usage notes. No license to third-party footage, music or likenesses is granted by this package.
+Rubber Band is a separately installed external executable. This package does not redistribute it. Obtain it from its official distribution or package manager and follow its license.
 
-Cloudflared is an optional external executable distributed by Cloudflare. Quick Tunnels are a development service; this package does not redistribute the binary.
+Hosted generation, vocal isolation, depth and segmentation remain subject to provider terms, billing and model availability. User uploads may contain separately protected footage, audio and likenesses; the software license grants no rights to that content.
+
+No third-party promotional artwork, sample footage, fonts or model binaries are bundled. The UI uses system fonts and original CSS. Original implementation attribution is recorded in NOTICE and LICENSE.

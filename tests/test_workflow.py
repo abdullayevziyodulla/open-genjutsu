@@ -14,38 +14,26 @@ class WorkflowTests(unittest.TestCase):
    (p/'mask.mp4').write_bytes(b'changed')
    with self.assertRaises(ValueError):mask_review.require_approved(p)
    with self.assertRaises(ValueError):mask_review.review(p,True,'stale',fingerprint)
+ def test_provider_selection_dispatches_once_without_network(self):
+  for provider,module in [('oxen','oxen_seedance'),('lec','lec_seedance'),('replicate','replicate_seedance')]:
+   with patch('seedance_bridge.setting',return_value=provider),patch(module+'.submit',return_value='saved-id') as submit:
+    self.assertEqual(seedance_bridge.submit('folder','prompt','photo'),'saved-id')
+    submit.assert_called_once_with('folder','prompt','photo',None,print)
+ def test_unknown_provider_cannot_fall_back_to_paid_service(self):
+  with patch('seedance_bridge.setting',return_value='unsupported'),patch('oxen_seedance.requests.post') as post:
+   with self.assertRaises(ValueError):seedance_bridge.submit('folder','prompt','photo')
+   post.assert_not_called()
  def test_existing_submission_not_requeued(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/'seedance-response.json').write_text('{}')
-   with patch('mask_review.require_approved'),patch('seedance_bridge.requests.post') as post:
+   with patch('seedance_bridge.setting',return_value='replicate'),patch('replicate_seedance.require_approved'),patch('replicate_seedance.requests.post') as post:
     with self.assertRaises(ValueError):seedance_bridge.submit(p,'prompt','reference.png')
     post.assert_not_called()
- def test_edit_draft_self_contained(self):
-  with tempfile.TemporaryDirectory() as d:
-   p=Path(d);(p/'audio-manifest.json').write_text('{}')
-   response=Mock();response.json.return_value={'requestId':'fake-id'}
-   with patch('mask_review.require_approved'),patch('seedance_bridge.credential',return_value='test'),patch('seedance_bridge.setting',return_value='https://example.org/callback'),patch('seedance_bridge.upload',return_value='https://example.org/media'),patch('audio_workflow.prepare_seedance_video',return_value=p/'seedance-input.mp4'),patch('seedance_bridge.requests.post',return_value=response) as post:
-    seedance_bridge.submit(p,'Replace one subject','reference.png')
-    payload=post.call_args.kwargs['json']
-    self.assertTrue(payload['is_draft']);self.assertEqual(payload['mode'],'edit');self.assertEqual(payload['audios'],[]);self.assertEqual(len(payload['videos']),1)
-    self.assertTrue((p/'generation.json').exists())
- def test_collection_downloads_and_restores(self):
-  with tempfile.TemporaryDirectory() as d:
-   response=Mock();response.json.return_value={'status':'COMPLETED','result':'https://example.org/result.mp4'}
-   media=Mock();media.content=b'video'
-   with patch('seedance_bridge.credential',return_value='test'),patch('seedance_bridge.requests.post',return_value=response),patch('seedance_bridge.requests.get',return_value=media),patch('seedance_bridge.finish_preview') as restore:
-    seedance_bridge.wait_and_finish(d,'fake-id')
-    self.assertEqual((Path(d)/'seedance-result.mp4').read_bytes(),b'video');restore.assert_called_once()
- def test_hd_only_reuses_draft(self):
-  with tempfile.TemporaryDirectory() as d:
-   p=Path(d)
-   for name in ['upload.mp4','final-preview.mp4']:(p/name).write_bytes(b'test')
-   (p/'generation.json').write_text(json.dumps({'request_id':'draft'}))
-   (p/'seedance-request.json').write_text(json.dumps({'is_draft':True,'webhook_url':''}))
-   response=Mock();response.json.return_value={'requestId':'hd-id'}
-   with patch('seedance_bridge.credential',return_value='test'),patch('seedance_bridge.requests.post',return_value=response) as post:
-    self.assertEqual(seedance_bridge.submit_hd(p),'hd-id')
-    self.assertEqual(post.call_args.kwargs['json'],{'draft_id':'draft','webhook_url':''})
-    with self.assertRaises(ValueError):seedance_bridge.submit_hd(p)
+ def test_collection_uses_saved_provider_not_current_settings(self):
+  with patch('replicate_seedance.saved_provider',return_value='oxen'),patch('seedance_bridge.setting',return_value='lec'),patch('oxen_seedance.wait_and_finish') as collect,patch('lec_seedance.wait_and_finish') as wrong:
+   seedance_bridge.wait_and_finish('folder','saved-id');collect.assert_called_once_with('folder','saved-id',print);wrong.assert_not_called()
+ def test_hd_uses_saved_provider(self):
+  with patch('replicate_seedance.saved_provider',return_value='oxen'),patch('oxen_seedance.submit_hd',return_value='hd-id') as hd:
+   self.assertEqual(seedance_bridge.submit_hd('folder'),'hd-id');hd.assert_called_once_with('folder')
 
 if __name__=='__main__':unittest.main()

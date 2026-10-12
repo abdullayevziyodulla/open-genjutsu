@@ -47,7 +47,8 @@ elif a.command=='repair-rgb':
  if mode=='depth_mesh':
   import shutil,subprocess
   shutil.copy2(folder/'composite-silent.mp4',folder/'depth-composite-silent.mp4')
-  subprocess.run([str(ROOT/'.venv-face/bin/python'),str(ROOT/'mesh_worker.py'),str(folder),'--depth'],check=True)
+  from runtime_paths import face_python
+  subprocess.run([str(face_python()),str(ROOT/'mesh_worker.py'),str(folder),'--depth'],check=True)
  prepare_seedance_video(folder)
  (folder/'mask-review.json').unlink(missing_ok=True)
  meta['mask_method']='SAM 3 on original RGB, preserving depth colors';(folder/'manifest.json').write_text(json.dumps(meta,indent=2))

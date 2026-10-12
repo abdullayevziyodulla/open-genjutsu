@@ -1,0 +1,7 @@
+Open Genjutsu is an independent derivative of the MIT-licensed Genjustsu Open Source Workflow.
+Original implementation: Copyright (c) 2026 Sirio Berati.
+Upstream source: https://github.com/sirioberati/Genjustsu-Open-Source-Workflow
+Modifications: Copyright (c) 2026 Open Genjutsu contributors.
+The required original MIT notice is retained in LICENSE.
+No upstream branding, companion artwork or example media is redistributed in this release.
+Historical reference field names remain internally for saved-job compatibility.
