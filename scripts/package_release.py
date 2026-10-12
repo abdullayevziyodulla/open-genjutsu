@@ -17,7 +17,7 @@ PYTHON={'app.py','audio_workflow.py','browser_preview.py','config.py','doctor.py
 
 def source_files(root=ROOT):
     selected=[root/name for name in sorted(FILES|PYTHON) if (root/name).is_file()]
-    for directory,suffixes in [('static',{'.html','.css','.js'}),('docs',{'.md','.jpg'}),
+    for directory,suffixes in [('static',{'.html','.css','.js','.png'}),('docs',{'.md','.jpg','.png'}),
                                ('tests',{'.py'}),('scripts',{'.py'}),('.github',{'.yml','.md'}),
                                ('.agents',{'.md'})]:
         selected.extend(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in suffixes
@@ -34,7 +34,7 @@ def package(output,root=ROOT):
         for path in entries:
             info=zipfile.ZipInfo.from_file(path,'Open-Genjutsu/'+path.relative_to(root).as_posix())
             data=path.read_bytes()
-            if path.suffix not in {'.jpg'}:
+            if path.suffix not in {'.jpg','.png'}:
                 data=data.replace(b'\r\n',b'\n')
                 if path.suffix=='.cmd':
                     data=data.replace(b'\n',b'\r\n')

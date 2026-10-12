@@ -62,4 +62,32 @@ class StudioTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as zipped:
                 self.assertEqual(set(zipped.namelist()),{'Open-Genjutsu/LICENSE','Open-Genjutsu/.env.example','Open-Genjutsu/static/index.html'})
 
+    def test_reference_library_only_returns_character_inputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runs=Path(directory);folder=runs/('a'*32);folder.mkdir()
+            (folder/'sirio-reference.jpg').write_bytes(b'photo')
+            (folder/'tein-reference.mp4').write_bytes(b'unsupported second identity video')
+            (folder/'generation.json').write_text('SECRET')
+            (folder/'original.mp4').write_bytes(b'PRIVATE_SOURCE')
+            other=runs/'not-a-job';other.mkdir();(other/'sirio-reference.jpg').write_bytes(b'PRIVATE')
+            with patch.object(app,'RUNS',runs):
+                response=TestClient(app.app).get('/references')
+                self.assertEqual(response.status_code,200)
+                items=response.json()['references'];self.assertEqual(len(items),1)
+                self.assertEqual(items[0]['url'],'/runs/'+folder.name+'/sirio-reference.jpg')
+                self.assertNotIn('SECRET',response.text);self.assertNotIn('original.mp4',response.text)
+
+    def test_release_preserves_png_bytes_and_unix_script_format(self):
+        spec=importlib.util.spec_from_file_location('package_release',Path(__file__).resolve().parents[1]/'scripts/package_release.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'static').mkdir()
+            image=b'\x89PNG\r\n\x1a\nBINARY';(root/'static/og-logo.png').write_bytes(image)
+            (root/'setup.sh').write_bytes(b'#!/bin/bash\r\necho ready\r\n')
+            archive=root/'release.zip';module.package(archive,root)
+            with zipfile.ZipFile(archive) as zipped:
+                self.assertEqual(zipped.read('Open-Genjutsu/static/og-logo.png'),image)
+                self.assertNotIn(b'\r',zipped.read('Open-Genjutsu/setup.sh'))
+                self.assertTrue(zipped.getinfo('Open-Genjutsu/setup.sh').external_attr>>16 & 0o111)
+
 if __name__=='__main__':unittest.main()

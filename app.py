@@ -420,6 +420,23 @@ def library():
 @app.get('/guide')
 def guide():return FileResponse(ROOT/'static/guide.html')
 
+@app.get('/references')
+def reference_library():
+    """Only named character inputs from local jobs; never expose metadata or arbitrary files."""
+    items=[]
+    for folder in RUNS.iterdir():
+        if folder.is_symlink() or not folder.is_dir() or len(folder.name)!=32 or any(c not in '0123456789abcdef' for c in folder.name):continue
+        for slot in ['sirio','tein']:
+            for ext in ['png','jpg','jpeg','webp','mp4','mov','webm']:
+                path=folder/(slot+'-reference.'+ext)
+                if slot=='tein' and ext in ['mp4','mov','webm']:continue
+                if path.is_symlink() or not path.is_file():continue
+                items.append({'id':folder.name+'/'+path.name,'url':'/runs/'+folder.name+'/'+path.name,
+                              'kind':'video' if ext in ['mp4','mov','webm'] else 'image',
+                              'label':'Character '+('1' if slot=='sirio' else '2')+' · '+folder.name[:6],
+                              'modified':path.stat().st_mtime})
+    return {'references':sorted(items,key=lambda item:item['modified'],reverse=True)[:60]}
+
 @app.post('/configuration/settings')
 def configure_settings(request:Request,provider:str=Form(...),replicate_token:str=Form(''),storage_repo:str=Form('')):
     from config import save_setting
