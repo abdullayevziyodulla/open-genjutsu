@@ -128,3 +128,7 @@ This is a **localhost, single-user studio**. Public multi-user hosting needs aut
 <p align="center"><strong>Open source. Bring your own keys. Make it yours.</strong></p>
 
 [MIT license](LICENSE) · [Required attribution](NOTICE) · [Third-party terms](THIRD-PARTY.md). Independent project; no affiliation with a commercial video platform. No model weights or third-party demonstration footage are bundled.
+
+### Interface language
+
+Open **Settings → Language** to choose **English** or **O‘zbekcha**. English is the default. The choice is saved in your browser and also applies to the setup guide. Prompts, API keys, filenames, and provider responses stay unchanged.

@@ -25,3 +25,5 @@ dialog .heading .dialog-close,dialog .heading #close-settings{width:31px;height:
 .dialog-close::before,.dialog-close::after,.tile-remove::before,.tile-remove::after,#close-settings::before,#close-settings::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;background:currentColor;border-radius:1px;pointer-events:none;transform:translate(-50%,-50%) rotate(45deg)}
 .dialog-close::after,.tile-remove::after,#close-settings::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .tile-remove::before,.tile-remove::after{width:9px;height:1.5px}
+
+.language-settings{padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--border,#3b3e3c)}.language-settings .field{margin-bottom:8px}.language-settings select{width:100%;min-height:44px}.language-settings .hint{margin:10px 0 0}
